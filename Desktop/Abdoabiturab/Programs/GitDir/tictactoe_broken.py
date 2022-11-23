@@ -23,29 +23,40 @@ def check_row_winner(row):
     return 0
 
 def get_col(game, col_number):
-    return [game[x][col_number] for x in range(3)]
+    return game[col_number]
 
 def get_row(game, row_number):
     return game[row_number]
-
+def check_column_winner(game):
+    n=False
+    for i in range(3):
+        if game[0][i]==game[1][i] and game[1][i]==game[2][i]:
+            n=True
+        else:
+            n=False
+        if n==True:
+            return game[0][i]
+    return 0
 def check_winner(game):
     game_slices = []
     for index in range(3):
         game_slices.append(get_row(game, index))
         game_slices.append(get_col(game, index))
-
+    print(game_slices)
     # check diagonals
     down_diagonal = [game[x][x] for x in range(3)]
-    up_diagonal = [game[0][2], game[1][1], game[2][0]]
-    game_slices.append(down_diagonal)
-    game_slices.append(up_diagonal)
-
+    if down_diagonal[0]==down_diagonal[1]==down_diagonal[2]:
+        winner=down_diagonal[0]
+        return winner
+    up_diagonal = [game[2][0], game[1][1], game[0][2]]
+    if up_diagonal[0] == up_diagonal[1] and up_diagonal[1] == up_diagonal[2]:
+        winner = up_diagonal[0]
+        return winner
     for game_slice in game_slices:
         winner = check_row_winner(game_slice)
         if winner != 0:
             return winner
-
-    return winner
+    return check_column_winner(game)
 
 def start_game():
     return [[0, 0, 0] for x in range(3)]
@@ -67,17 +78,22 @@ def add_piece(game, player, row, column):
     row: 0-index row
     column: 0-index column
     """
-    game[row][column+1] = player
+    check=check_space_empty(game,row,column)
+    if check==True:
+        game[row][column+1] = player
     return game
 
 def check_space_empty(game, row, column):
-    return game[row][column] == 0
+    if game[row][column+1] == 0:
+        return True
+    else:
+        return False
 
 def convert_input_to_coordinate(user_input):
     return user_input - 1
 
 def switch_player(player):
-    if player = 1:
+    if player == 1:
         return 2
     else:
         return 1
@@ -97,13 +113,17 @@ if __name__ == '__main__':
 
     while winner == 0 and moves_exist(game):
         print("Currently player: " + str(player))
-        available = False
-        while not available
+        available = True
+        while available:
             row = convert_input_to_coordinate(int(input("Which row? (start with 1) ")))
-            column = convert_input_to_coordinate(int(input("Which column? (start with 1) ")))
-            available = check_space_empty(game, row)
-        game = add_piece(game, player, row, column)
-        display_game(game)
-        player = switch_player(player)
-#        winner = check_winner(game)
+            column = convert_input_to_coordinate(int(input("Which column? (start with 1) ")))-1
+            available = check_space_empty(game, row, column)
+            if available == True:
+                add_piece(game, player, row, column)
+                display_game(game)
+                player = switch_player(player)
+                winner = check_winner(game)
+                available = False
+            else:
+                print("Place is already taken")
     display_winner(winner)
