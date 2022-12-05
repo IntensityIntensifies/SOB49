@@ -70,7 +70,6 @@ def display_game(game):
             new_row.append(d[game[row_num][col_num]])
         print("|" + "|".join(new_row) + "|")
 
-
 def add_piece(game, player, row, column):
     """
     game: game state
